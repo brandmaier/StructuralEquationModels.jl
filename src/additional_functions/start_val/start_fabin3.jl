@@ -138,7 +138,6 @@ function start_fabin3(ram_matrices::RAMMatrices, Σ, μ)
         # is there at least one reference indicator?
         if size(reference, 1) > 0
             if size(reference, 1) > 1
-                @warn "You have more than 1 scaling indicator"
                 reference = reference[1]
             else
                 reference = reference[1]
