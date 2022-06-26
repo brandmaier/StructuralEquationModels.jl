@@ -57,7 +57,7 @@ include("additional_functions/start_val/start_fabin3.jl")
 include("additional_functions/start_val/start_partable.jl")
 include("additional_functions/start_val/start_simple.jl")
 include("additional_functions/artifacts.jl")
-include("additional_functions/simulation.jl")
+include("additional_functions/simulation/swap_observed.jl")
 # identifier
 include("additional_functions/identifier.jl")
 # fit measures
