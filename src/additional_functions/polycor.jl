@@ -16,8 +16,11 @@
  
  
  
-  x = [(i%7)%4 for i in 1:100]
-  y = [i%3 for i in 1:100]
+  x = [(i%7)%4 for i in 1:100]  # will be rows
+  y = [i%3 for i in 1:100]  # will be columns
+
+ num_r = length(unique(x))
+
   normal = Normal()
 
   function mvDistFunTable(rho, row_cuts, col_cuts) 
@@ -48,12 +51,21 @@
   pars = [.1, -1,0,1, 2, -2,0,.5, Inf]
   pars = [.1, -1,0,1, 2, -2,0,-.5, Inf]
 
+  #=
+  this is the polychoric loss function
+  for the inner optimization run
+  
+  arguments: an array of parameters of which the first
+  is the correlation, followed by th row cuts, followed
+  by the column cuts
+
+  needs to have access to variable num_r !!
+  =#
   function pcloss(pars)
      rho = min(max(-1, pars[1]), +1)
-     num_elements =Int( (length(pars)-1)/2 )
-
-     row_cuts = pars[2:(num_elements+1)]
-     col_cuts = pars[(num_elements+2):(num_elements*2+1)]
+     
+     row_cuts = pars[2:(num_r+1)]
+     col_cuts = pars[(num_r+2):end]
 
     row_cuts[2:end] = [max(1e-7,x) for x in row_cuts[2:end]]
     col_cuts[2:end] = [max(1e-7,x) for x in col_cuts[2:end]]
@@ -65,10 +77,7 @@
      row_cuts = vcat(-Inf, row_cuts, +Inf)
      col_cuts = vcat(-Inf, col_cuts, +Inf)
 
-     row_cuts = sort(row_cuts)
-     col_cuts = sort(col_cuts)
-
-     # gnrate cross-tabulated data
+     # genrate cross-tabulated data
      tab = freqtable(x,y) 
      # compute probability masses
      #print(row_cuts, " AND ",col_cuts, "\n")
@@ -84,7 +93,7 @@
   end
 
 
-  pcloss([0.1, 2,4, 6,7])
+  pcloss([0.1, 2,4,5, 6,7])
 
   opt = optimize(pcloss, [0.1, -1,2,  -1,+2])
   
