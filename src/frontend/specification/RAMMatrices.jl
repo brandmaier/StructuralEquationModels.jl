@@ -36,6 +36,14 @@ end
 
 latent_var_indices(ram::RAMMatrices) = [i for i in axes(ram.F, 2) if islatent_var(ram, i)]
 
+function variance_params(ram::RAMMatrices)
+    diag_inds = Set(LinearIndices(size(ram.S))[i, i] for i in 1:nvars(ram))
+    return [
+        ram.param_labels[i] for i in eachindex(ram.param_labels) if
+        any(in(diag_inds), param_occurences(ram.S, i))
+    ]
+end
+
 # observed variables in the order as they appear in ram.F rows
 function observed_vars(ram::RAMMatrices)
     if isnothing(ram.vars)

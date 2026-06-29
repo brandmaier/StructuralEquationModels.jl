@@ -15,7 +15,8 @@ using LinearAlgebra,
     LazyArtifacts,
     DelimitedFiles,
     DataFrames,
-    ProgressMeter
+    ProgressMeter,
+    Random
 
 import StatsAPI: params, coef, coefnames, dof, fit, nobs, coeftable
 
@@ -73,6 +74,7 @@ include("frontend/specification/documentation.jl")
 include("optimizer/abstract.jl")
 include("optimizer/Empty.jl")
 include("optimizer/optim.jl")
+include("optimizer/stochastic.jl")
 # helper functions
 include("additional_functions/helper.jl")
 include("additional_functions/start_val/common.jl")
@@ -129,6 +131,7 @@ export AbstractSem,
     sem_terms,
     sem_term,
     SemOptimizer,
+    SemOptimizerStochastic,
     optimizer,
     optimizer_engine,
     optimizer_engine_doc,
