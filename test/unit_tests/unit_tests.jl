@@ -8,6 +8,7 @@ available_tests = Dict(
     "specification" => "SemSpecification",
     "model" => "Sem model",
     "StatsAPI" => "StatsAPI",
+    "stochastic" => "Stochastic optimizer",
 )
 
 # Determine which tests to run based on command-line arguments
