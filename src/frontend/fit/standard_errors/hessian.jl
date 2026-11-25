@@ -34,21 +34,19 @@ function se_hessian(fit::SemFit; method = :finitediff)
     return [sqrt(c * H_inv[i]) for i in diagind(H_inv)]
 end
 
-# Addition functions -------------------------------------------------------------
-function H_scaling(model::AbstractSemSingle)
-    if length(model.loss.functions) > 1
-        @warn "Hessian scaling for multiple loss functions is not implemented yet"
+# Additional functions -------------------------------------------------------------
+
+H_nsamples(loss::SemML) = nsamples(loss) - 1
+H_nsamples(loss::SemWLS) = nsamples(loss) - 1
+H_nsamples(loss::SemFIML) = nsamples(loss)
+H_nsamples(loss::SemLoss) = nsamples(loss)
+H_nsamples(wrapper::SemLossFiniteDiff) = H_nsamples(_unwrap(wrapper))
+
+function H_scaling(model::AbstractSem)
+    semterms = SEM.sem_terms(model)
+    isempty(semterms) && return 1.0
+    if any(term -> _unwrap(loss(term)) isa SemWLS, semterms)
+        @warn "Standard errors for WLS are only correct if a GLS weight matrix (the default) is used."
     end
-    return H_scaling(model.loss.functions[1], model)
+    return 2 / sum(term -> H_nsamples(loss(term)), semterms)
 end
-
-H_scaling(lossfun::SemML, model::AbstractSemSingle) = 2 / (nsamples(model) - 1)
-
-function H_scaling(lossfun::SemWLS, model::AbstractSemSingle)
-    @warn "Standard errors for WLS are only correct if a GLS weight matrix (the default) is used."
-    return 2 / (nsamples(model) - 1)
-end
-
-H_scaling(lossfun::SemFIML, model::AbstractSemSingle) = 2 / nsamples(model)
-
-H_scaling(model::SemEnsemble) = 2 / nsamples(model)
